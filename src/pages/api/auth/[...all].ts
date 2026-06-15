@@ -6,6 +6,9 @@ import { getCloudflareEnv } from "@/lib/cloudflare-env";
 import { createLogger } from "@/lib/logger";
 import type { APIRoute } from "astro";
 
+// Astro 6 默认 static 输出下，显式声明 API 路由为服务端渲染
+export const prerender = false;
+
 const logger = createLogger("auth:api");
 
 // 此路由不预渲染，需要 SSR 处理请求
