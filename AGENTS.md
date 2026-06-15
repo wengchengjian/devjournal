@@ -25,7 +25,7 @@ blog/
 │   ├── lib/                 # 工具函数（auth / format / posts / logger）
 │   ├── pages/               # 文件路由（含动态路由 [...slug]）
 │   ├── plugins/             # 自定义 rehype 插件
-│   └── styles/              # 全局 CSS（设计 Token + 排版）
+│   └── styles/              # 已迁移到 public/，仅保留目录结构
 │   └── *.test.ts            # 与源文件同目录的单元测试
 ```
 
@@ -40,7 +40,7 @@ blog/
 | 开发日志 | src/lib/logger.ts |
 | 自定义 rehype 插件 | src/plugins/rehype-code-block.ts |
 | 内容集合 schema | src/content.config.ts |
-| 全局样式/设计 Token | src/styles/global.css |
+| 全局样式/设计 Token | public/global.css + public/pagefind.css |
 | Astro locals 类型声明 | src/env.d.ts |
 
 ## CODE MAP
