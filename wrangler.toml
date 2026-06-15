@@ -20,7 +20,13 @@ binding = "DB"
 database_name = "devjournal-auth"
 database_id = "9e007ab5-c475-4757-9562-530662f079a9"
 
-# KV 命名空间 — session 缓存 + 阅读量计数
+# KV 命名空间 — better-auth secondary storage + 阅读量计数
 [[kv_namespaces]]
 binding = "KV"
+id = "473b9fc79c5746059a3e735eecec32a4"
+
+# Astro Cloudflare adapter默认会为 Sessions API 注入 SESSION 绑定
+# 这里显式声明，避免 Wrangler 自动创建同名命名空间失败
+[[kv_namespaces]]
+binding = "SESSION"
 id = "a2d61cb8ce1b4c4da9b991526589fe8c"
