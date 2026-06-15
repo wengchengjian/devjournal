@@ -3,9 +3,11 @@
 # 生产构建：DEPLOY_ENV=production pnpm build && npx wrangler deploy
 
 name = "devjournal"
-main = "./dist/_worker.js/index.js"
 compatibility_date = "2025-06-01"
 compatibility_flags = ["nodejs_compat"]
+
+# main 留空：@astrojs/cloudflare 会在构建时生成 dist/server/wrangler.json
+# 并指向真正的 worker 入口；若在这里写 main，Cloudflare Vite 插件会在构建前校验文件是否存在而报错
 
 # 静态资源目录；_worker.js / _routes.json 通过 dist/.assetsignore 排除
 [assets]
