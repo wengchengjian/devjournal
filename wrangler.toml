@@ -13,12 +13,12 @@ directory = "./dist"
 binding = "ASSETS"
 
 # D1 数据库 — 存储 better-auth 用户和会话表
+# 不填 database_id，首次 wrangler deploy 会自动预配并写回 ID
 [[d1_databases]]
 binding = "DB"
 database_name = "devjournal-auth"
-database_id = "placeholder-replace-after-create"
 
 # KV 命名空间 — session 缓存 + 阅读量计数
+# 不填 id，首次 wrangler deploy 会自动预配并写回 ID
 [[kv_namespaces]]
 binding = "KV"
-id = "placeholder-replace-after-create"
