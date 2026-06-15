@@ -11,9 +11,6 @@ export const prerender = false;
 
 const logger = createLogger("auth:api");
 
-// 此路由不预渲染，需要 SSR 处理请求
-export const prerender = false;
-
 export const ALL: APIRoute = async (ctx) => {
   const { pathname } = ctx.url;
   logger.info(`${ctx.request.method} ${pathname}`);
