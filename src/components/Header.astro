@@ -1,0 +1,373 @@
+---
+// Header.astro —— 顶部导航
+// logo (Archivo Black) + nav (JetBrains Mono) + 搜索 + 登录 + 主题切换 (SVG)
+const navItems = [
+  { label: "文章", href: "/posts" },
+  { label: "关于", href: "/about" },
+  { label: "RSS", href: "/rss.xml" },
+];
+
+const pathname = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === "/" ? pathname === "/" : pathname.startsWith(href);
+
+// 服务端获取用户状态
+const user = Astro.locals.user;
+---
+
+<header class="header">
+  <div class="container header-inner">
+    <a href="/" class="logo" aria-label="返回首页">
+      devjournal
+    </a>
+
+    <nav class="nav" aria-label="主导航">
+      {
+        navItems.map((item) => (
+          <a
+            href={item.href}
+            class:list={["nav-link", { active: isActive(item.href) }]}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+      <button
+        id="search-toggle"
+        class="search-toggle"
+        type="button"
+        aria-label="搜索"
+      >
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" /><path d="M21 21l-4.35-4.35" />
+        </svg>
+      </button>
+      {/* 登录/登出按钮：未登录显示 GitHub 图标，已登录显示头像 */}
+      {user ? (
+        <div class="auth-menu">
+          <button
+            id="auth-toggle"
+            class="auth-avatar"
+            type="button"
+            aria-label="用户菜单"
+          >
+            <img src={user.image || undefined} alt={user.name || "用户"} width="24" height="24" class="avatar-img" />
+          </button>
+          <div id="auth-dropdown" class="auth-dropdown">
+            <span class="auth-name">{user.name || user.email}</span>
+            <button id="sign-out" class="auth-signout" type="button">登出</button>
+          </div>
+        </div>
+      ) : (
+        <button
+          id="sign-in-github"
+          class="auth-login"
+          type="button"
+          aria-label="使用 GitHub 登录"
+        >
+          <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+          </svg>
+        </button>
+      )}
+      <button
+        id="theme-toggle"
+        class="theme-toggle"
+        type="button"
+        aria-label="切换明暗主题"
+      >
+        <!-- 太阳图标（暗色模式显示） -->
+        <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+        </svg>
+        <!-- 月亮图标（亮色模式显示） -->
+        <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+        </svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .header {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .header-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-block: var(--space-5);
+  }
+
+  .logo {
+    font-family: var(--font-display);
+    font-size: var(--text-base);
+    letter-spacing: 0.05em;
+    transition: opacity var(--dur-fast) var(--ease);
+  }
+
+  .logo:hover {
+    opacity: 0.6;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-6);
+  }
+
+  .nav-link {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-fg-secondary);
+    letter-spacing: 0.05em;
+    transition: color var(--dur-fast) var(--ease);
+    position: relative;
+  }
+
+  .nav-link:hover {
+    color: var(--color-fg);
+  }
+
+  .nav-link.active {
+    color: var(--color-fg);
+  }
+
+  .nav-link.active::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--color-fg);
+  }
+
+  /* 搜索按钮（匹配主题切换按钮风格） */
+  .search-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: var(--color-fg-secondary);
+    transition: color var(--dur-fast) var(--ease);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: var(--space-2);
+  }
+
+  .search-toggle:hover {
+    color: var(--color-fg);
+  }
+
+  /* 主题切换按钮 */
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: var(--color-fg-secondary);
+    transition: color var(--dur-fast) var(--ease);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-left: var(--space-2);
+  }
+
+  .theme-toggle:hover {
+    color: var(--color-fg);
+  }
+
+  /* 登录按钮（GitHub 图标） */
+  .auth-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    color: var(--color-fg-secondary);
+    transition: color var(--dur-fast) var(--ease);
+    margin-left: var(--space-2);
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .auth-login:hover {
+    color: var(--color-fg);
+  }
+
+  /* 登出下拉菜单 */
+  .auth-menu {
+    position: relative;
+    margin-left: var(--space-2);
+  }
+
+  .auth-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .avatar-img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .auth-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: var(--space-2);
+    padding: var(--space-3);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    white-space: nowrap;
+    z-index: 100;
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+  }
+
+  .auth-dropdown.open {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .auth-name {
+    color: var(--color-fg);
+    font-weight: 600;
+  }
+
+  .auth-signout {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-fg-secondary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .auth-signout:hover {
+    color: var(--color-fg);
+  }
+
+  .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* 暗色模式显示太阳（点击切回亮色），亮色模式显示月亮 */
+  .icon-sun {
+    display: none;
+  }
+  :global([data-theme="dark"]) .icon-sun {
+    display: block;
+  }
+  :global([data-theme="dark"]) .icon-moon {
+    display: none;
+  }
+
+  /* 移动端：nav 缩小间距 */
+  @media (max-width: 768px) {
+    .header-inner {
+      padding-block: var(--space-4);
+    }
+    .nav {
+      gap: var(--space-4);
+    }
+    .nav-link {
+      font-size: var(--text-xs);
+    }
+  }
+</style>
+
+<!-- 主题切换脚本：内联，0 框架依赖 -->
+<script>
+  const toggle = document.getElementById("theme-toggle");
+  toggle?.addEventListener("click", () => {
+    const html = document.documentElement;
+    const current =
+      html.dataset.theme ||
+      (window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light");
+    const next = current === "dark" ? "light" : "dark";
+    html.dataset.theme = next;
+    localStorage.setItem("theme", next);
+  });
+</script>
+
+<!-- 认证交互脚本：GitHub 登录 + 下拉菜单 + 登出 -->
+<script>
+  import { signIn, signOut } from "@/lib/auth-client";
+
+  // GitHub OAuth 登录
+  const signInBtn = document.getElementById("sign-in-github");
+  if (signInBtn) {
+    signInBtn.addEventListener("click", async () => {
+      try {
+        await signIn.social({
+          provider: "github",
+          callbackURL: "/",
+        });
+      } catch (err) {
+        console.error("登录失败:", err);
+      }
+    });
+  }
+
+  // 下拉菜单切换
+  const authToggle = document.getElementById("auth-toggle");
+  const authDropdown = document.getElementById("auth-dropdown");
+
+  if (authToggle && authDropdown) {
+    authToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      authDropdown.classList.toggle("open");
+    });
+
+    // 点击外部关闭下拉菜单
+    document.addEventListener("click", () => {
+      authDropdown.classList.remove("open");
+    });
+  }
+
+  // 登出
+  const signOutBtn = document.getElementById("sign-out");
+  if (signOutBtn) {
+    signOutBtn.addEventListener("click", async () => {
+      try {
+        await signOut();
+        window.location.href = "/";
+      } catch (err) {
+        console.error("登出失败:", err);
+      }
+    });
+  }
+</script>

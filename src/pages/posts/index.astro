@@ -1,0 +1,87 @@
+---
+// 文章归档页 /posts —— 按年份分组展示
+export const prerender = true;
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostList from "../../components/PostList.astro";
+import { getSortedPosts, groupByYear } from "../../lib/posts";
+
+const allPosts = await getSortedPosts();
+const groupedByYear = groupByYear(allPosts);
+const totalCount = allPosts.length;
+---
+
+<BaseLayout
+  title="归档 — devjournal"
+  description="所有文章按年份归档。"
+>
+  <div class="container">
+    <section>
+      <h2 class="section-label">
+        归档 · Archive（{totalCount} 篇）
+      </h2>
+
+      {
+        groupedByYear.map(({ year, posts }) => (
+          <section class="year-group">
+            <h3 class="year-label">{year}</h3>
+            <PostList posts={posts} useDash />
+          </section>
+        ))
+      }
+
+      {
+        totalCount === 0 && (
+          <p class="empty">还没有文章。第一篇正在路上。</p>
+        )
+      }
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .container {
+    padding-top: var(--space-8);
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--color-fg-muted);
+    margin-bottom: var(--space-7);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    font-weight: 500;
+  }
+
+  .year-group {
+    margin-bottom: var(--space-9);
+  }
+
+  .year-group:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .year-label {
+    font-family: var(--font-serif);
+    font-size: var(--text-3xl);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--color-fg);
+    margin-bottom: var(--space-5);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  /* PostList 的 margin-bottom 会在最后一项多出留白，这里收紧 */
+  .year-group :global(.post-list) {
+    margin-bottom: 0;
+  }
+
+  .empty {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--color-fg-muted);
+    padding-block: var(--space-8);
+  }
+</style>

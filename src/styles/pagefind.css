@@ -1,0 +1,50 @@
+/* ============================================================
+   Pagefind UI 样式覆盖 —— 匹配 Swiss Minimal 设计系统
+   使用 --pf-* CSS 变量定制 Pagefind Component UI
+   ============================================================ */
+
+:root {
+  /* 颜色：映射到我们的设计令牌 */
+  --pf-text: var(--color-fg);
+  --pf-text-secondary: var(--color-fg-secondary);
+  --pf-background: var(--color-surface);
+  --pf-border: var(--color-border);
+  --pf-mark: var(--color-fg);
+  --pf-hover: var(--color-muted);
+  --pf-focus-ring: var(--color-fg);
+
+  /* 字体 */
+  --pf-font: var(--font-sans);
+
+  /* 尺寸 */
+  --pf-input-height: 48px;
+  --pf-input-font-size: var(--text-md);
+  --pf-border-radius: 8px;
+  --pf-image-width: 64px;
+  --pf-image-height: 48px;
+
+  /* 弹窗 */
+  --pf-modal-max-width: 640px;
+  --pf-modal-backdrop: rgba(0, 0, 0, 0.5);
+}
+
+/* 暗色模式覆盖 */
+:root[data-theme="dark"] {
+  --pf-text: var(--color-fg);
+  --pf-text-secondary: var(--color-fg-secondary);
+  --pf-background: var(--color-surface);
+  --pf-border: var(--color-border);
+  --pf-mark: var(--color-fg);
+  --pf-hover: var(--color-muted);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --pf-text: #f5f5f3;
+    --pf-text-secondary: #a8a8a3;
+    --pf-background: #1a1a1b;
+    --pf-border: #2a2a28;
+    --pf-mark: #f5f5f3;
+    --pf-hover: #1e1e20;
+  }
+}

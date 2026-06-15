@@ -1,0 +1,18 @@
+# Cloudflare Pages 配置
+# 本地开发使用 wrangler pages dev 或 astro dev (node adapter)
+# 生产部署使用 Cloudflare Pages + D1 + KV
+
+name = "devjournal"
+compatibility_date = "2025-06-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 数据库 — 存储 better-auth 用户和会话表
+[[d1_databases]]
+binding = "DB"
+database_name = "devjournal-auth"
+database_id = "placeholder-replace-after-create"
+
+# KV 命名空间 — session 缓存 + 阅读量计数
+[[kv_namespaces]]
+binding = "KV"
+id = "placeholder-replace-after-create"

@@ -1,0 +1,117 @@
+---
+// PostList.astro —— 编号文章列表组件
+// 4 列网格：序号 | 标题 | 分类 | 日期
+// hover 时整体右移（极简克制反馈）
+import type { CollectionEntry } from "astro:content";
+import { formatDate } from "../lib/format";
+
+interface Props {
+  posts: CollectionEntry<"blog">[];
+  startNumber?: number; // 起始序号
+  useDash?: boolean; // 用 — 代替数字（归档区）
+}
+
+const { posts, startNumber = 1, useDash = false } = Astro.props;
+---
+
+<ul class="post-list">
+  {
+    posts.map((post, i) => {
+      const num = useDash ? "—" : String(startNumber + i).padStart(2, "0");
+      return (
+        <li>
+          <span class="num">{num}</span>
+          <a href={`/posts/${post.id}/`} class="title">
+            {post.data.title}
+          </a>
+          {post.data.tags.length > 0 ? (
+            <a href={`/tags/${post.data.tags[0]}/`} class="cat">{post.data.tags[0]}</a>
+          ) : (
+            <span class="cat">未分类</span>
+          )}
+          <time class="date" datetime={post.data.pubDate.toISOString()}>
+            {formatDate(post.data.pubDate)}
+          </time>
+        </li>
+      );
+    })
+  }
+</ul>
+
+<style>
+  .post-list {
+    margin-bottom: var(--space-10);
+  }
+
+  .post-list li {
+    display: grid;
+    grid-template-columns: 40px 1fr auto 120px;
+    align-items: baseline;
+    gap: var(--space-5);
+    padding: 28px 0;
+    border-bottom: 1px solid var(--color-border);
+    transition: padding var(--dur) var(--ease);
+  }
+
+  .post-list li:hover {
+    padding-left: var(--space-4);
+  }
+
+  .num {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-fg-faint);
+  }
+
+  .title {
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: var(--leading-snug);
+    color: var(--color-fg);
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .title:hover {
+    color: var(--color-fg-secondary);
+  }
+
+  .cat {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-fg-muted);
+    text-decoration: none;
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .cat:hover {
+    color: var(--color-fg);
+  }
+
+  .date {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-fg-muted);
+    text-align: right;
+  }
+
+  /* 响应式：小屏隐藏分类列 */
+  @media (max-width: 768px) {
+    .post-list li {
+      grid-template-columns: 30px 1fr 90px;
+      gap: var(--space-4);
+      padding: 20px 0;
+    }
+
+    .cat {
+      display: none;
+    }
+
+    .title {
+      font-size: var(--text-md);
+    }
+  }
+</style>

@@ -1,0 +1,86 @@
+---
+// BaseLayout.astro —— 页面骨架，所有页面共用
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import PagefindConfig from "astro-pagefind/components/PagefindConfig.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+}
+
+const { title, description, image } = Astro.props;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <BaseHead title={title} description={description} image={image} />
+  </head>
+  <body>
+    <PagefindConfig lang="zh" />
+    <Header />
+    <main data-pagefind-ignore>
+      <slot />
+    </main>
+    <Footer data-pagefind-ignore />
+    <pagefind-modal></pagefind-modal>
+
+    <!-- 搜索弹窗 + 暗色主题同步 -->
+    <script>
+      // 同步暗色主题到 Pagefind
+      function syncPagefindTheme() {
+        const html = document.documentElement;
+        const modal = document.querySelector("pagefind-modal");
+        if (!modal) return;
+
+        const isDark =
+          html.dataset.theme === "dark" ||
+          (!html.dataset.theme &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches);
+
+        if (isDark) {
+          modal.setAttribute("data-pf-theme", "dark");
+        } else {
+          modal.removeAttribute("data-pf-theme");
+        }
+      }
+
+      // 初始同步
+      syncPagefindTheme();
+
+      // 监听主题切换
+      const observer = new MutationObserver(() => {
+        syncPagefindTheme();
+      });
+      observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-theme"],
+      });
+
+      // 监听系统偏好变化
+      window
+        .matchMedia("(prefers-color-scheme: dark)")
+        .addEventListener("change", syncPagefindTheme);
+
+      // 搜索按钮 → 打开弹窗
+      document
+        .getElementById("search-toggle")
+        ?.addEventListener("click", () => {
+          const modal = document.querySelector("pagefind-modal") as HTMLElement & { open?: () => void };
+          modal?.open?.();
+        });
+
+      // Cmd+K / Ctrl+K 快捷键
+      document.addEventListener("keydown", (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+          e.preventDefault();
+          const modal = document.querySelector("pagefind-modal") as HTMLElement & { open?: () => void };
+          modal?.open?.();
+        }
+      });
+    </script>
+  </body>
+</html>

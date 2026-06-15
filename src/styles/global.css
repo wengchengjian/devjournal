@@ -1,0 +1,476 @@
+/* ============================================================
+   设计 Token —— 极简瑞士派 (Swiss Minimal)
+   配色：纯黑白灰，暗色模式反转（desaturated 变体）
+   来源：blog-style-preview.html 第一个风格
+   ============================================================ */
+:root {
+  /* 颜色 —— 纯黑白灰 */
+  --color-bg: #fafaf8;
+  --color-fg: #111111;
+  --color-fg-secondary: #555555;
+  --color-fg-muted: #999999;
+  --color-fg-faint: #bbbbbb;
+  --color-border: #e5e5e0;
+  --color-border-strong: #111111;
+  --color-surface: #ffffff;
+  --color-muted: #f5f5f3;
+
+  /* 间距系统 —— 4/8 节奏 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 80px;
+  --space-10: 100px;
+
+  /* 字体栈 */
+  --font-serif: 'Fraunces', 'Noto Serif SC', Georgia, 'Times New Roman', serif;
+  --font-sans: 'IBM Plex Sans', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', Consolas, ui-monospace, monospace;
+  --font-display: 'Archivo Black', 'Noto Sans SC', sans-serif;
+
+  /* 字号 —— 模块化比例 */
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 16px;
+  --text-md: 18px;
+  --text-lg: 20px;
+  --text-xl: 24px;
+  --text-2xl: 32px;
+  --text-3xl: 48px;
+
+  /* 行高 */
+  --leading-tight: 1.02;
+  --leading-snug: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  --leading-loose: 1.75;
+
+  /* 字间距 */
+  --tracking-tight: -0.03em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.1em;
+  --tracking-wider: 0.15em;
+  --tracking-widest: 0.2em;
+
+  /* 布局 */
+  --container-max: 1200px;
+  --content-max: 65ch; /* 行宽控制：长文 65-75 字符 */
+  --container-padding: 48px;
+
+  /* 动效 */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --dur: 300ms;
+  --dur-fast: 150ms;
+
+  /* z-index 层级 */
+  --z-header: 100;
+  --z-overlay: 1000;
+}
+
+/* ============================================================
+   暗色模式 —— desaturated 变体，非简单反转
+   ============================================================ */
+:root[data-theme="dark"] {
+  --color-bg: #0f0f10;
+  --color-fg: #f5f5f3;
+  --color-fg-secondary: #a8a8a3;
+  --color-fg-muted: #76766f;
+  --color-fg-faint: #4a4a45;
+  --color-border: #2a2a28;
+  --color-border-strong: #f5f5f3;
+  --color-surface: #1a1a1b;
+  --color-muted: #1e1e20;
+}
+
+/* 跟随系统偏好（仅当用户没手动设置时生效） */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --color-bg: #0f0f10;
+    --color-fg: #f5f5f3;
+    --color-fg-secondary: #a8a8a3;
+    --color-fg-muted: #76766f;
+    --color-fg-faint: #4a4a45;
+    --color-border: #2a2a28;
+    --color-border-strong: #f5f5f3;
+    --color-surface: #1a1a1b;
+    --color-muted: #1e1e20;
+  }
+}
+
+/* ============================================================
+   Reset
+   ============================================================ */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-size: var(--text-base);
+  line-height: var(--leading-relaxed);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+  overflow-x: hidden;
+}
+
+/* 图片无尺寸时防 CLS */
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+img {
+  height: auto;
+}
+
+/* 排版基础 */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: var(--leading-snug);
+  overflow-wrap: break-word;
+}
+
+p,
+li {
+  overflow-wrap: break-word;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+/* ============================================================
+   无障碍基础 (a11y)
+   ============================================================ */
+
+/* 键盘焦点可见 */
+:focus-visible {
+  outline: 2px solid var(--color-fg);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* 尊重减少动效偏好 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 屏幕阅读器专用文本 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ============================================================
+   容器布局
+   ============================================================ */
+.container {
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-padding);
+}
+
+/* ============================================================
+   响应式断点：375 / 768 / 1024 / 1440
+   ============================================================ */
+@media (max-width: 768px) {
+  :root {
+    --container-padding: 24px;
+    --space-10: 64px;
+  }
+}
+
+@media (max-width: 375px) {
+  :root {
+    --container-padding: 20px;
+  }
+}
+
+/* ============================================================
+   Markdown 内容排版 —— 文章正文专用
+   作用于 .prose 容器
+   ============================================================ */
+.prose {
+  max-width: var(--content-max);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading-loose);
+  color: var(--color-fg);
+}
+
+/* 段落首段略大，引导阅读 */
+.prose > p:first-of-type {
+  font-size: var(--text-lg);
+  color: var(--color-fg-secondary);
+}
+
+.prose p {
+  margin-block: var(--space-5);
+}
+
+/* 标题 */
+.prose h2 {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  margin-top: var(--space-9);
+  margin-bottom: var(--space-4);
+  letter-spacing: -0.02em;
+}
+
+.prose h3 {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  margin-top: var(--space-7);
+  margin-bottom: var(--space-3);
+  letter-spacing: -0.01em;
+}
+
+/* 列表 */
+.prose ul,
+.prose ol {
+  margin-block: var(--space-5);
+  padding-left: var(--space-6);
+}
+
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose li {
+  margin-block: var(--space-2);
+  padding-left: var(--space-2);
+}
+
+.prose li::marker {
+  color: var(--color-fg-muted);
+  font-family: var(--font-mono);
+}
+
+/* 强调 */
+.prose strong {
+  font-weight: 600;
+  color: var(--color-fg);
+}
+
+/* 行内代码 */
+.prose code:not(pre code) {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--color-border);
+  padding: 2px 6px;
+  border-radius: 3px;
+  color: var(--color-fg);
+  font-weight: 500;
+}
+
+/* 代码块容器（figure wrapper，由 rehype 插件注入） */
+.prose .code-block {
+  margin-block: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* header：语言标签 + 文件名 + 复制按钮 */
+.prose .code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-muted);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.prose .code-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.prose .code-filename {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-fg);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prose .code-lang {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-fg-muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+
+/* 复制按钮 */
+.prose .copy-btn {
+  flex-shrink: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--color-fg-muted);
+  padding: var(--space-1) var(--space-2);
+  border-radius: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color var(--dur-fast) var(--ease);
+  margin-left: var(--space-4);
+}
+
+.prose .copy-btn:hover {
+  color: var(--color-fg);
+}
+
+.prose .copy-btn:focus-visible {
+  outline: 2px solid var(--color-fg);
+  outline-offset: 1px;
+}
+
+/* Shiki 的 pre —— 去掉独立 border/margin，由 figure 承担 */
+.prose .code-block pre {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+  padding: var(--space-5);
+  margin: 0;
+  border-radius: 0;
+  overflow-x: auto;
+  border: none;
+}
+
+.prose pre code {
+  font-family: inherit;
+  background: none;
+  padding: 0;
+}
+
+/* Shiki 双主题：亮色用默认 inline style（无需覆盖）
+   暗色模式切换到 --shiki-dark 变量 */
+[data-theme="dark"] .astro-code,
+[data-theme="dark"] .astro-code span {
+  background-color: var(--shiki-dark-bg) !important;
+  color: var(--shiki-dark) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .astro-code,
+  :root:not([data-theme="light"]) .astro-code span {
+    background-color: var(--shiki-dark-bg) !important;
+    color: var(--shiki-dark) !important;
+  }
+}
+
+/* 引用块 */
+.prose blockquote {
+  border-left: 2px solid var(--color-fg);
+  padding-left: var(--space-5);
+  margin-block: var(--space-6);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: var(--text-lg);
+  color: var(--color-fg-secondary);
+}
+
+/* 分隔线 */
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--color-border);
+  margin-block: var(--space-8);
+}
+
+/* 表格 */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-block: var(--space-6);
+  font-size: var(--text-sm);
+}
+
+.prose th,
+.prose td {
+  border: 1px solid var(--color-border);
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+}
+
+.prose th {
+  background: var(--color-border);
+  font-weight: 600;
+}
+
+/* 链接 */
+.prose a {
+  color: var(--color-fg);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: text-decoration-thickness var(--dur-fast) var(--ease);
+}
+
+.prose a:hover {
+  text-decoration-thickness: 2px;
+}
+
+/* 图片 */
+.prose img {
+  border-radius: 8px;
+  margin-block: var(--space-6);
+}
+

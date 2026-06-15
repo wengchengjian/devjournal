@@ -1,0 +1,76 @@
+---
+// 404 页面 —— Swiss Minimal
+// 安静角落里的空书架。不报警，只低语。
+export const prerender = true;
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="404 — devjournal"
+  description="这个页面不存在"
+>
+  <meta name="robots" content="noindex" />
+
+  <div class="container">
+    <div class="not-found">
+      <p class="not-found-code">404</p>
+      <p class="not-found-message">这个页面不存在</p>
+      <a href="/" class="not-found-link">&larr;&thinsp;返回首页</a>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding-top: var(--space-10);
+    padding-bottom: var(--space-10);
+  }
+
+  .not-found-code {
+    font-family: var(--font-mono);
+    font-size: clamp(96px, 15vw, 200px);
+    font-weight: 300;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-fg-muted);
+  }
+
+  .not-found-message {
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    font-style: italic;
+    color: var(--color-fg-secondary);
+    margin-top: var(--space-5);
+  }
+
+  .not-found-link {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-fg-secondary);
+    margin-top: var(--space-7);
+    transition: color var(--dur-fast) var(--ease);
+    text-decoration: none;
+  }
+
+  .not-found-link:hover {
+    color: var(--color-fg);
+  }
+
+  .not-found-link:focus-visible {
+    outline: 2px solid var(--color-fg);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  @media (max-width: 768px) {
+    .not-found {
+      padding-top: var(--space-8);
+      padding-bottom: var(--space-8);
+    }
+
+    .not-found-code {
+      font-size: clamp(72px, 20vw, 120px);
+    }
+  }
+</style>

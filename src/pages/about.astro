@@ -1,0 +1,89 @@
+---
+// 关于页 /about
+export const prerender = true;
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="关于 — devjournal"
+  description="关于这个博客和它背后的写作者。"
+>
+  <article class="container">
+    <header class="page-header">
+      <h1>关于</h1>
+    </header>
+
+    <div class="prose">
+      <p>一个写代码，也写字的人。</p>
+
+      <p>
+        全职开发者，兼职写作者。相信好的代码和好的文字一样，都需要反复打磨。这个博客记录我在编程世界的所见、所思、所造。
+      </p>
+
+      <h2>这个博客</h2>
+
+      <p>
+        用 <a href="https://astro.build" target="_blank" rel="noopener">Astro</a> 搭建，设计风格是极简瑞士派——黑白灰、大留白、衬线字体。没有评论区，没有追踪脚本，没有广告。只有文字和代码。
+      </p>
+
+      <p>
+        我不追求更新频率，只写真正值得反复读的东西。可能是技术深度的拆解，可能是一段调试的感悟，也可能是对工程美学的思考。
+      </p>
+
+      <h2>联系方式</h2>
+
+      <ul>
+        <li><a href="https://github.com" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://twitter.com" target="_blank" rel="noopener">Twitter</a></li>
+        <li><a href="/rss.xml">RSS 订阅</a></li>
+      </ul>
+
+      <h2>关于"瑞士派"</h2>
+
+      <p>
+        瑞士国际主义排版风格（Swiss Style / International Typographic Style）兴起于 1950
+        年代，强调网格系统、无衬线字体、客观清晰的层级。它的影响遍及平面设计、网页设计、甚至软件界面。
+      </p>
+
+      <blockquote>
+        <p>克制不是匮乏，而是让每个元素都有存在的理由。</p>
+      </blockquote>
+
+      <p>
+        这种哲学和好的工程实践出奇地一致——不是写得越多越好，而是每行代码都承担意义。
+      </p>
+
+      <hr />
+
+      <p>
+        如果你读到这儿了，谢谢你。祝你在这里读得愉快。
+      </p>
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .container {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
+
+  .page-header {
+    max-width: var(--content-max);
+    margin-bottom: var(--space-8);
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .page-header h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(36px, 5vw, 56px);
+    font-weight: 400;
+    letter-spacing: var(--tracking-tight);
+    font-style: italic;
+  }
+
+  .prose {
+    margin-inline: auto;
+  }
+</style>

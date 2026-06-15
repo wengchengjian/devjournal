@@ -1,0 +1,133 @@
+---
+// 首页 —— 极简瑞士派
+export const prerender = true;
+import { getCollection } from "astro:content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PostList from "../components/PostList.astro";
+
+// 获取所有非草稿文章，按日期倒序
+const allPosts = (await getCollection("blog", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+
+// 最近 3 篇 + 其余归档
+const recentPosts = allPosts.slice(0, 3);
+const archivePosts = allPosts.slice(3);
+---
+
+<BaseLayout
+  title="devjournal — 一个写代码，也写字的人"
+  description="关于编程、架构和工程美学的深度思考。不追逐热点，只留下值得反复读的东西。"
+>
+  <div class="container">
+    <!-- Hero -->
+    <section class="hero">
+      <h1>
+        写一些<span class="bold">代码</span>，<br />
+        和关于代码的<em>思考</em>。
+      </h1>
+      <p class="lede">
+        一个安静的角落，记录我在编程世界里的所见、所思、所造。不追逐热点，只留下真正值得反复读的东西。
+      </p>
+    </section>
+
+    <!-- 最近文章 -->
+    <section>
+      <h2 class="section-label">最近文章 · Recent</h2>
+      <PostList posts={recentPosts} startNumber={1} />
+    </section>
+
+    <!-- 归档 -->
+    {
+      archivePosts.length > 0 && (
+        <section>
+          <h2 class="section-label">归档 · Archive</h2>
+          <PostList posts={archivePosts} useDash />
+        </section>
+      )
+    }
+
+    <!-- 空状态 -->
+    {
+      allPosts.length === 0 && (
+        <section>
+          <h2 class="section-label">还没有文章</h2>
+          <p class="empty">第一篇文章正在路上。</p>
+        </section>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .hero {
+    margin-top: var(--space-8);
+    margin-bottom: var(--space-10);
+  }
+
+  .hero h1 {
+    font-family: var(--font-serif);
+    font-size: clamp(48px, 7vw, 96px);
+    font-weight: 300;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    margin-bottom: var(--space-5);
+    font-style: italic;
+  }
+
+  .hero h1 .bold {
+    font-weight: 900;
+    font-style: normal;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  .lede {
+    font-family: var(--font-sans);
+    font-size: var(--text-lg);
+    font-weight: 300;
+    line-height: var(--leading-normal);
+    color: var(--color-fg-secondary);
+    max-width: 560px;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--color-fg-muted);
+    margin-bottom: var(--space-7);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-weight: 500;
+  }
+
+  .empty {
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--color-fg-muted);
+    padding-block: var(--space-8);
+  }
+
+  /* 小屏调整 */
+  @media (max-width: 768px) {
+    .hero {
+      margin-top: var(--space-6);
+      margin-bottom: var(--space-8);
+    }
+
+    .hero h1 {
+      font-size: clamp(40px, 10vw, 64px);
+    }
+
+    .lede {
+      font-size: var(--text-md);
+    }
+  }
+</style>

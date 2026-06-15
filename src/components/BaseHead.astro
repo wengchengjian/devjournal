@@ -1,0 +1,82 @@
+---
+// BaseHead.astro —— 所有页面共用的 <head> 内容
+// 包含：meta、字体、SEO、防闪烁主题脚本
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title,
+  description = "一个写代码，也写字的人。关于编程、架构和工程美学的深度思考。",
+  image = "/og-default.png",
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!-- 基础 meta -->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta name="generator" content={Astro.generator} />
+<link rel="canonical" href={canonicalURL} />
+
+<!-- 标题与描述 -->
+<title>{title}</title>
+<meta name="description" content={description} />
+
+<!-- RSS 发现 -->
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title="Blog"
+  href={new URL("rss.xml", Astro.site)}
+/>
+
+<!-- favicon -->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+<!-- 防闪烁主题脚本：在首次绘制前同步执行，避免暗色模式白闪 -->
+<script is:inline>
+  (function () {
+    const stored = localStorage.getItem("theme");
+    if (stored === "dark" || stored === "light") {
+      document.documentElement.dataset.theme = stored;
+    }
+    // 无存储时跟随系统（由 CSS @media 处理，这里不写 data-theme）
+  })();
+</script>
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={new URL(image, Astro.url)} />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={new URL(image, Astro.url)} />
+
+<!-- 字体加载：preconnect + display swap 防 FOIT/CLS -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- 拉丁字体：立即加载 -->
+<link
+  href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,300;1,9..144,400&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+  rel="stylesheet"
+/>
+<!-- CJK 字体：延迟加载，仅简体中文子集 -->
+<link
+  href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700&family=Noto+Serif+SC:wght@400;900&display=swap"
+  rel="stylesheet"
+/>
+
+<!-- 全局样式 -->
+<link rel="stylesheet" href="/src/styles/global.css" />
+<!-- Pagefind 搜索 UI 样式覆盖 -->
+<link rel="stylesheet" href="/src/styles/pagefind.css" />

@@ -1,0 +1,268 @@
+---
+// TableOfContents.astro —— 文章目录组件
+// 桌面端：右侧粘性侧边栏，跟随滚动高亮当前章节
+// 移动端：折叠式 <details> 元素，位于正文上方
+interface Props {
+  headings: { depth: number; slug: string; text: string }[];
+}
+
+const { headings } = Astro.props;
+
+// 过滤：只显示 h2 和 h3 标题，忽略更深层级
+const items = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+
+// 没有足够的标题则完全不渲染
+const hasHeadings = items.length >= 2;
+---
+
+{hasHeadings && (
+  <>
+    <!-- 桌面端：粘性侧边栏 -->
+    <aside class="toc toc-desktop" aria-label="目录导航">
+      <div class="toc-title">目录</div>
+      <nav>
+        <ul class="toc-list">
+          {items.map((item) => (
+            <li class={`toc-item toc-depth-${item.depth}`}>
+              <a href={`#${item.slug}`}>{item.text}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- 移动端：折叠面板 -->
+    <details class="toc toc-mobile">
+      <summary class="toc-summary">目录</summary>
+      <nav>
+        <ul class="toc-list">
+          {items.map((item) => (
+            <li class={`toc-item toc-depth-${item.depth}`}>
+              <a href={`#${item.slug}`}>{item.text}</a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </details>
+  </>
+)}
+
+<style>
+  /* ============================================================
+     共用样式
+     ============================================================ */
+  .toc {
+    font-family: var(--font-sans);
+  }
+
+  .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .toc-item {
+    margin: 0;
+  }
+
+  .toc a {
+    display: block;
+    color: var(--color-fg-muted);
+    text-decoration: none;
+    border-left: 2px solid transparent;
+    padding: var(--space-1) var(--space-3);
+    transition: color var(--dur-fast) var(--ease),
+      border-color var(--dur-fast) var(--ease);
+    line-height: var(--leading-normal);
+  }
+
+  .toc a:hover {
+    color: var(--color-fg);
+    border-left-color: var(--color-fg-faint);
+  }
+
+  .toc a[data-active] {
+    color: var(--color-fg);
+    font-weight: 600;
+    border-left-color: var(--color-fg);
+  }
+
+  /* h3 缩进 + 更小字号 */
+  .toc-depth-3 a {
+    padding-left: var(--space-5);
+    font-size: var(--text-xs);
+  }
+
+  /* ============================================================
+     桌面端侧边栏（≥ 1024px）
+     ============================================================ */
+  .toc-desktop {
+    display: block;
+    position: sticky;
+    top: var(--space-10);
+    max-height: calc(100vh - var(--space-10) * 2);
+    overflow-y: auto;
+    padding-left: var(--space-5);
+    border-left: 1px solid var(--color-border);
+  }
+
+  .toc-title {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    color: var(--color-fg-muted);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    margin-bottom: var(--space-3);
+    padding-left: var(--space-3);
+  }
+
+  .toc-desktop .toc-item + .toc-item {
+    margin-top: 1px;
+  }
+
+  /* ============================================================
+     移动端折叠面板（< 1024px）
+     ============================================================ */
+  .toc-mobile {
+    display: none;
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    padding: var(--space-3) 0;
+    margin-bottom: var(--space-6);
+  }
+
+  .toc-mobile[open] {
+    padding-bottom: var(--space-4);
+  }
+
+  .toc-summary {
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+    color: var(--color-fg-secondary);
+    letter-spacing: var(--tracking-wide);
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    user-select: none;
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .toc-summary:hover {
+    color: var(--color-fg);
+  }
+
+  /* 自定义折叠箭头 */
+  .toc-summary::before {
+    content: "";
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-right: 1.5px solid currentColor;
+    border-bottom: 1.5px solid currentColor;
+    transform: rotate(-45deg) translateY(-1px);
+    transition: transform var(--dur-fast) var(--ease);
+  }
+
+  .toc-mobile[open] > .toc-summary::before {
+    transform: rotate(45deg) translateY(0);
+  }
+
+  /* 隐藏原生 disclosure triangle */
+  .toc-summary::-webkit-details-marker {
+    display: none;
+  }
+  .toc-summary::marker {
+    display: none;
+    content: "";
+  }
+
+  .toc-mobile .toc-list {
+    padding-top: var(--space-3);
+  }
+
+  .toc-mobile .toc-item + .toc-item {
+    margin-top: var(--space-1);
+  }
+
+  /* ============================================================
+     响应式切换
+     ============================================================ */
+  @media (max-width: 1023px) {
+    .toc-desktop {
+      display: none;
+    }
+    .toc-mobile {
+      display: block;
+    }
+  }
+</style>
+
+<!-- 滚动追踪 + 平滑跳转 —— 纯原生 JS，0 框架依赖 -->
+<script>
+  function initTOC() {
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    // 点击 TOC 链接 → 平滑滚动到目标标题
+    document.querySelectorAll(".toc a[href^='#']").forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const href = link.getAttribute("href");
+        if (!href) return;
+        const target = document.querySelector(href);
+        if (target) {
+          target.scrollIntoView({
+            behavior: reducedMotion ? "auto" : "smooth",
+          });
+        }
+      });
+    });
+
+    // 如果用户偏好减少动画，跳过滚动追踪
+    if (reducedMotion) return;
+
+    // IntersectionObserver 检测当前可见标题
+    const observer = new IntersectionObserver(
+      (entries) => {
+        // 找到第一个出现在视口内的标题
+        const visible = entries
+          .filter((e) => e.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+        if (visible.length > 0) {
+          const id = visible[0].target.getAttribute("id");
+          if (!id) return;
+
+          // 清除所有激活状态
+          document
+            .querySelectorAll(".toc a[data-active]")
+            .forEach((a) => a.removeAttribute("data-active"));
+
+          // 激活对应的 TOC 链接
+          const tocLinks = document.querySelectorAll(`.toc a[href="#${CSS.escape(id)}"]`);
+          tocLinks.forEach((a) => a.setAttribute("data-active", ""));
+        }
+      },
+      {
+        // 顶部留 20% 余量，底部触发点提前（当标题接近视口顶部时触发）
+        rootMargin: "-15% 0px -75% 0px",
+        threshold: 0,
+      },
+    );
+
+    // 监听正文中所有带 id 的 h2/h3
+    document
+      .querySelectorAll(".prose h2[id], .prose h3[id]")
+      .forEach((heading) => observer.observe(heading));
+  }
+
+  // 确保 DOM 就绪后初始化
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initTOC);
+  } else {
+    initTOC();
+  }
+</script>

@@ -1,0 +1,74 @@
+---
+// 标签筛选页 /tags/[tag] —— 显示某标签下所有文章
+export const prerender = true;
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostList from "../../components/PostList.astro";
+import { getPostsByTag, getAllTags } from "../../lib/posts";
+
+export async function getStaticPaths() {
+  const tags = await getAllTags();
+  return tags.map(({ tag }) => ({
+    params: { tag },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+const posts = await getPostsByTag(tag);
+---
+
+<BaseLayout
+  title={`${tag} — devjournal`}
+  description={`标签「${tag}」下的所有文章，共 ${posts.length} 篇。`}
+>
+  <div class="container">
+    <section>
+      <h2 class="section-label">
+        <a href="/posts/" class="section-link">归档</a>
+        <span class="separator">/</span>
+        {tag}
+        <span class="count">（{posts.length} 篇）</span>
+      </h2>
+
+      <PostList posts={posts} useDash />
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .container {
+    padding-top: var(--space-8);
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    color: var(--color-fg-muted);
+    margin-bottom: var(--space-7);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--color-border);
+    font-weight: 500;
+  }
+
+  .section-link {
+    color: var(--color-fg-muted);
+    text-decoration: none;
+    transition: color var(--dur-fast) var(--ease);
+  }
+
+  .section-link:hover {
+    color: var(--color-fg);
+  }
+
+  .separator {
+    margin-inline: var(--space-2);
+    color: var(--color-fg-faint);
+  }
+
+  .count {
+    color: var(--color-fg-faint);
+    font-weight: 400;
+  }
+</style>
