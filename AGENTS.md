@@ -15,7 +15,7 @@ Swiss Minimal 设计风格，自定义 CSS Token（无 Tailwind/UI 框架）。
 ```
 blog/
 ├── astro.config.ts          # 双 adapter：Node（本地开发）/ Cloudflare（生产）
-├── wrangler.toml            # Cloudflare 绑定（D1 + KV）
+├── wrangler.toml            # Cloudflare Workers 配置（D1 + KV）
 ├── vitest.config.ts         # Vitest 测试框架配置
 ├── pnpm-workspace.yaml      # 允许 esbuild/sharp/workerd 原生构建
 ├── src/
@@ -91,7 +91,7 @@ pnpm astro     # Astro CLI
 ## NOTES
 
 - .env 中有 GitHub OAuth 本地凭证，切勿提交到仓库（已在 .gitignore 中）
-- 环境变量回退链：ctx.locals.runtime.env → process.env → import.meta.env（middleware 与 auth API 共用）
+- 环境变量回退链：cloudflare:workers env → process.env → import.meta.env（middleware 与 auth API 共用）
 - wrangler.toml 中 D1/KV id 为占位符，生产部署前必须替换
 - 本地 KV 调试数据保存在 .wrangler/state/v3/kv/
 - 无 linter/formatter 配置

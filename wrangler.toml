@@ -1,10 +1,16 @@
-# Cloudflare Pages 配置
-# 本地开发使用 wrangler pages dev 或 astro dev (node adapter)
-# 生产部署使用 Cloudflare Pages + D1 + KV
+# Cloudflare Workers 配置（Astro 6 + @astrojs/cloudflare v13）
+# 本地开发使用 astro dev + @astrojs/node（workerd 在 Windows 上可能 access violation）
+# 生产构建：DEPLOY_ENV=production pnpm build && npx wrangler deploy
 
 name = "devjournal"
+main = "dist/_worker.js/index.js"
 compatibility_date = "2025-06-01"
 compatibility_flags = ["nodejs_compat"]
+
+# 静态资源目录；_worker.js / _routes.json 通过 dist/.assetsignore 排除
+[assets]
+directory = "./dist"
+binding = "ASSETS"
 
 # D1 数据库 — 存储 better-auth 用户和会话表
 [[d1_databases]]

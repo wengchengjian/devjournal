@@ -9,7 +9,7 @@ import { rehypeCodeBlock } from "./src/plugins/rehype-code-block";
 
 // 本地开发使用 @astrojs/node（workerd 在 Windows 上有 access violation 问题）
 // 生产部署使用 @astrojs/cloudflare（通过 DEPLOY_ENV=production 环境变量切换）
-// Cloudflare adapter 自动注入 D1/KV bindings 到 ctx.locals.runtime.env
+// @astrojs/cloudflare v13 通过 cloudflare:workers 导入 env，不再注入到 ctx.locals.runtime
 const adapter =
   process.env.DEPLOY_ENV === "production"
     ? cloudflare()
@@ -20,6 +20,14 @@ export default defineConfig({
   site: "https://example.com",
   adapter,
   integrations: [sitemap(), pagefind()],
+  vite: {
+    build: {
+      rollupOptions: {
+        // cloudflare:workers 仅在 Cloudflare 运行时存在，Node 构建时不需要打包
+        external: ["cloudflare:workers"],
+      },
+    },
+  },
   markdown: {
     shikiConfig: {
       // 双主题：亮色 + 暗色，通过 CSS 变量切换

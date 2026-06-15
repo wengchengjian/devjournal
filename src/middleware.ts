@@ -2,6 +2,7 @@
 // 在每个请求前注入用户 session 到 Astro.locals
 
 import { createAuth } from "@/lib/auth";
+import { getCloudflareEnv } from "@/lib/cloudflare-env";
 import { createLogger } from "@/lib/logger";
 import { defineMiddleware } from "astro:middleware";
 
@@ -21,10 +22,10 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   logger.info(`${context.request.method} ${pathname}`);
 
-  // 优先从 Cloudflare runtime 获取环境绑定
-  // 本地开发（Node adapter）回退到 process.env
-  const runtime = context.locals.runtime as { env?: Record<string, unknown> } | undefined;
-  const env = (runtime?.env ?? {}) as Record<string, unknown>;
+  // 优先从 Cloudflare Workers 运行时获取环境绑定
+  // 本地开发（Node adapter）不存在 cloudflare:workers，回退到 process.env / import.meta.env
+  const cfEnv = await getCloudflareEnv();
+  const env = cfEnv ?? {};
 
   const authEnv = {
     DB: (env.DB ?? process.env.DB ?? import.meta.env.DB) as D1Database | undefined,

@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/post-build.mjs",
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest run",
@@ -27,6 +27,7 @@
     "@cloudflare/workers-types": "^4.20260613.1",
     "@types/hast": "^3.0.4",
     "unified": "^9.2.2",
-    "vitest": "^4.1.8"
+    "vitest": "^4.1.8",
+    "wrangler": "^4.100.0"
   }
 }

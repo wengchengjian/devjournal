@@ -2,6 +2,7 @@
 // catch-all 路由：处理 /api/auth/* 所有认证端点
 
 import { createAuth } from "@/lib/auth";
+import { getCloudflareEnv } from "@/lib/cloudflare-env";
 import { createLogger } from "@/lib/logger";
 import type { APIRoute } from "astro";
 
@@ -14,10 +15,10 @@ export const ALL: APIRoute = async (ctx) => {
   const { pathname } = ctx.url;
   logger.info(`${ctx.request.method} ${pathname}`);
 
-  // 优先从 Cloudflare runtime 获取环境绑定
-  // 本地开发（Node adapter）回退到 process.env
-  const runtime = ctx.locals.runtime as { env?: Record<string, unknown> } | undefined;
-  const env = (runtime?.env ?? {}) as Record<string, unknown>;
+  // 优先从 Cloudflare Workers 运行时获取环境绑定
+  // 本地开发（Node adapter）不存在 cloudflare:workers，回退到 process.env / import.meta.env
+  const cfEnv = await getCloudflareEnv();
+  const env = cfEnv ?? {};
 
   const authEnv = {
     DB: (env.DB ?? process.env.DB ?? import.meta.env.DB) as D1Database | undefined,
