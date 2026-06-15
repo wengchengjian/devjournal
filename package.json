@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build && node scripts/post-build.mjs",
+    "deploy": "wrangler deploy dist/_worker.js/index.js",
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest run",
