@@ -18,6 +18,7 @@ const adapter =
 // https://astro.build/config
 export default defineConfig({
   site: "https://example.com",
+  output: "hybrid",
   adapter,
   integrations: [sitemap(), pagefind()],
   vite: {

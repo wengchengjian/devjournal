@@ -3,11 +3,9 @@
 # 生产构建：DEPLOY_ENV=production pnpm build && npx wrangler deploy
 
 name = "devjournal"
+main = "./dist/_worker.js/index.js"
 compatibility_date = "2025-06-01"
 compatibility_flags = ["nodejs_compat"]
-
-# main 在构建时会被 Cloudflare Vite 插件校验，但构建前文件还不存在；
-# 部署时通过命令行传入 dist/_worker.js/index.js。
 
 # 静态资源目录；_worker.js / _routes.json 通过 dist/.assetsignore 排除
 [assets]
